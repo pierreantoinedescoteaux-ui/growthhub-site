@@ -1,75 +1,72 @@
 # Growth Hub — website
 
 A single-page static site (plain HTML/CSS/JS, no build step). Rebuilt to replace the
-paid Mixo hosting. Free to host on Cloudflare Pages; you keep paying only for the domain.
+paid Mixo hosting. Hosted free on **GitHub Pages**; you keep paying only for the domain.
 
-## Files that get deployed
+- **Live (GitHub Pages URL):** https://pierreantoinedescoteaux-ui.github.io/growthhub-site/
+- **Repo:** https://github.com/pierreantoinedescoteaux-ui/growthhub-site
+- **Final URL (after DNS cutover):** https://growthhub.house
+
+## Files
 - `index.html` — the page
 - `styles.css` — styling
 - `script.js` — footer year, waitlist redirect, scroll animations
 - `favicon.svg` — site icon
 - `assets/` — `hero-group.jpg` (founders photo), `paul.jpg` (testimonial headshot)
 
-`_design-reference/` is dev-only (Mixo screenshot + render). It is git-ignored and never deployed.
+`_design-reference/`, `dist/`, `node_modules/` are git-ignored (dev only).
 
 ## The waitlist
-Both the hero email box and every "Join the waitlist" button open your existing Google Form:
-`https://forms.gle/3sb8WSJUnqbjkZE49`
-To change where signups go, edit the one `WAITLIST_URL` line at the top of `script.js`.
+The hero email box and every "Join the waitlist" button open your existing Google Form:
+`https://forms.gle/3sb8WSJUnqbjkZE49`. To change it, edit `WAITLIST_URL` at the top of `script.js`.
 
-## To edit text later
-Open `index.html` and edit the copy directly. To swap a photo, replace the file in `assets/`
-(keep the same filename) or update the `src` in `index.html`.
-
----
-
-# Deploy recipe — Cloudflare Pages (free)
-
-## Step 1 — Create a free Cloudflare account
-Go to https://dash.cloudflare.com/sign-up and sign up (free, no card needed).
-
-## Step 2 — Deploy the site (drag-and-drop, no GitHub needed)
-1. In the Cloudflare dashboard, left sidebar → **Workers & Pages**.
-2. Click **Create** → **Pages** tab → **Upload assets**.
-3. Project name: `growthhub` → **Create project**.
-4. Drag the **contents** of the `growthhub-site` folder onto the upload box —
-   that's `index.html`, `styles.css`, `script.js`, `favicon.svg`, and the `assets` folder.
-   (You do NOT need `_design-reference`, `.gitignore`, or `README.md`.)
-5. Click **Deploy site**. In ~30 seconds you get a live URL like `growthhub.pages.dev`.
-   Open it and confirm everything looks right.
-
-## Step 3 — Put your domain on it (registrar = GoDaddy)
-Your domain `growthhub.house` is registered at **GoDaddy** (nameservers `ns05/ns06.domaincontrol.com`).
-Recommended path moves DNS onto Cloudflare so apex + www + SSL are automatic and free — a one-time
-nameserver change at GoDaddy.
-
-1. **Cloudflare:** dashboard → **Add a site** → type `growthhub.house` → choose the **Free** plan.
-2. Cloudflare scans your current DNS and gives you **two nameservers** (e.g. `xxx.ns.cloudflare.com`).
-   Keep that tab open.
-3. **GoDaddy:** sign in at https://godaddy.com → avatar (top-right) → **My Products** →
-   find `growthhub.house` → **Domain Settings** (or the ••• menu → **Manage DNS**).
-4. Scroll to the **Nameservers** section → **Change** → choose **"I'll use my own nameservers"**
-   (a.k.a. "Enter my own nameservers / advanced") → delete the two GoDaddy ones → paste the two
-   Cloudflare nameservers → **Save**. If GoDaddy warns about a lock, confirm/continue.
-   (Propagation: a few minutes to a few hours.)
-5. **Cloudflare:** → **Workers & Pages** → your `growthhub` project → **Custom domains** →
-   **Set up a custom domain** → enter `www.growthhub.house` → confirm. Repeat for `growthhub.house`
-   (apex). Cloudflare creates the records and the free SSL certificate automatically.
-
-> **If you can't log into GoDaddy:** you may have registered the domain *through Mixo*, which means
-> Mixo manages it for you. In that case, do NOT cancel Mixo until you either (a) get GoDaddy account
-> access, or (b) change the DNS inside Mixo's domain settings first — otherwise the domain could stop
-> resolving. Sort out domain access before cancelling.
-
-## Step 4 — Cancel Mixo
-Once `https://www.growthhub.house` loads the new site with the padlock (SSL), your Mixo
-subscription is no longer doing anything. Cancel it.
+## To edit the site later
+Edit the files, then from this folder run:
+```
+git add -A
+git commit -m "describe your change"
+git push
+```
+GitHub rebuilds and the live site updates in ~1 minute.
 
 ---
 
-## Optional — GitHub-connected deploys (auto-publish on every edit)
-If you'd rather have changes go live automatically when you edit files:
-1. Push this folder to a GitHub repo.
-2. Cloudflare Pages → **Create** → **Connect to Git** → pick the repo → Framework preset: **None**
-   → Build command: *(leave empty)* → Output directory: `/` → **Save and Deploy**.
-3. Every `git push` then redeploys the site. Custom domain setup is the same as Step 3.
+# Connect your domain (growthhub.house) — final step
+
+The site is already live on the GitHub URL above. To make **growthhub.house** show it and
+retire Mixo, two things happen: change DNS at GoDaddy, then attach the domain on GitHub.
+
+Your domain is registered at **GoDaddy** (nameservers `ns05/ns06.domaincontrol.com`,
+renews 2026-10-06). DNS is currently pointed at Mixo; we repoint it to GitHub.
+
+## Step 1 — Change DNS records at GoDaddy
+1. Sign in at https://godaddy.com → avatar (top-right) → **My Products**.
+2. Find `growthhub.house` → **Domain** → **Manage DNS** (or the ••• → DNS).
+3. **Delete** the existing record that points to Mixo (a CNAME on `www` pointing to
+   `...customer.mixo.io`, and/or any `A`/forwarding on the root `@`).
+4. **Add these records** (Type / Name / Value):
+   - `A` / `@` / `185.199.108.153`
+   - `A` / `@` / `185.199.109.153`
+   - `A` / `@` / `185.199.110.153`
+   - `A` / `@` / `185.199.111.153`
+   - `CNAME` / `www` / `pierreantoinedescoteaux-ui.github.io`
+   Leave TTL at default (1 hour). Save.
+   (Propagation: minutes to a few hours.)
+
+## Step 2 — Attach the domain on GitHub
+Once DNS is changed, re-add the custom domain (recreates the `CNAME` file + provisions SSL):
+```
+cd C:\Users\User\growthhub-site
+"growthhub.house" | Out-File -Encoding ascii -NoNewline CNAME
+git add CNAME; git commit -m "Attach growthhub.house"; git push
+```
+Then in the repo: **Settings → Pages → Custom domain** → confirm `growthhub.house` shows
+"DNS check successful", and tick **Enforce HTTPS** once it's available (can take ~15 min–1 hr).
+
+## Step 3 — Cancel Mixo
+When https://growthhub.house loads the new site with the padlock, Mixo is doing nothing.
+Cancel the subscription.
+
+> **If you can't log into GoDaddy:** you may have registered the domain *through Mixo*. In that
+> case do NOT cancel Mixo until you either get GoDaddy access or change DNS inside Mixo's domain
+> settings first — otherwise the domain could stop resolving. Sort domain access out before cancelling.
