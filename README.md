@@ -38,20 +38,28 @@ Go to https://dash.cloudflare.com/sign-up and sign up (free, no card needed).
 5. Click **Deploy site**. In ~30 seconds you get a live URL like `growthhub.pages.dev`.
    Open it and confirm everything looks right.
 
-## Step 3 — Put your domain on it
-This is the only part that needs your domain registrar. Recommended path moves the domain
-onto Cloudflare so DNS + SSL are automatic and free:
+## Step 3 — Put your domain on it (registrar = GoDaddy)
+Your domain `growthhub.house` is registered at **GoDaddy** (nameservers `ns05/ns06.domaincontrol.com`).
+Recommended path moves DNS onto Cloudflare so apex + www + SSL are automatic and free — a one-time
+nameserver change at GoDaddy.
 
-1. Cloudflare dashboard → **Add a site** → type `growthhub.house` → choose the **Free** plan.
-2. Cloudflare scans your current DNS and gives you **two nameservers**
-   (e.g. `xxx.ns.cloudflare.com`).
-3. Log in to wherever you bought the domain (your registrar) → find **Nameservers / DNS** settings
-   → replace the existing nameservers with the two Cloudflare gave you → save.
-   (Propagation takes anywhere from a few minutes to a few hours.)
-4. Back in Cloudflare → **Workers & Pages** → your `growthhub` project → **Custom domains**
-   → **Set up a custom domain** → enter `www.growthhub.house` → confirm.
-   Repeat for `growthhub.house` (apex) so both work. Cloudflare creates the records and the
-   free SSL certificate automatically.
+1. **Cloudflare:** dashboard → **Add a site** → type `growthhub.house` → choose the **Free** plan.
+2. Cloudflare scans your current DNS and gives you **two nameservers** (e.g. `xxx.ns.cloudflare.com`).
+   Keep that tab open.
+3. **GoDaddy:** sign in at https://godaddy.com → avatar (top-right) → **My Products** →
+   find `growthhub.house` → **Domain Settings** (or the ••• menu → **Manage DNS**).
+4. Scroll to the **Nameservers** section → **Change** → choose **"I'll use my own nameservers"**
+   (a.k.a. "Enter my own nameservers / advanced") → delete the two GoDaddy ones → paste the two
+   Cloudflare nameservers → **Save**. If GoDaddy warns about a lock, confirm/continue.
+   (Propagation: a few minutes to a few hours.)
+5. **Cloudflare:** → **Workers & Pages** → your `growthhub` project → **Custom domains** →
+   **Set up a custom domain** → enter `www.growthhub.house` → confirm. Repeat for `growthhub.house`
+   (apex). Cloudflare creates the records and the free SSL certificate automatically.
+
+> **If you can't log into GoDaddy:** you may have registered the domain *through Mixo*, which means
+> Mixo manages it for you. In that case, do NOT cancel Mixo until you either (a) get GoDaddy account
+> access, or (b) change the DNS inside Mixo's domain settings first — otherwise the domain could stop
+> resolving. Sort out domain access before cancelling.
 
 ## Step 4 — Cancel Mixo
 Once `https://www.growthhub.house` loads the new site with the padlock (SSL), your Mixo
